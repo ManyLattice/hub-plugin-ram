@@ -8,3 +8,6 @@
 .ram-bar { display: block; height: 100%; background: var(--primary, #4a7); }
 .ram-proc { padding: 2px 0 2px 24px; color: var(--n-500); font-size: var(--text-xs); font-family: var(--font-code); }
 .ram-badge { font-size: 10px; color: var(--n-500); margin-left: 4px; flex: none; font-variant-numeric: tabular-nums; }
+.ram-acts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: 4px 0 6px 24px; }
+.ram-acts:empty { display: none; }
+.ram-note { color: var(--n-500); font-size: var(--text-xs); }
