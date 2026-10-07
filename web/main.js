@@ -52,6 +52,9 @@ function render(root) {
   );
 }
 
+const BADGE_KB = 250 * 1024;   // метка в списке — от 250 МБ
+const short = (kb) => (kb >= 1024 * 1024 ? `${(kb / 1048576).toFixed(1).replace(".", ",")}Г` : `${Math.round(kb / 1024)}М`);
+
 export default function register(h) {
   hub = h;
   hub.addStyle("web/ram.css");
@@ -62,14 +65,21 @@ export default function register(h) {
     show(root) { const f = () => render(root); listeners.add(f); root._ramf = f; render(root); },
     hide(root) { listeners.delete(root._ramf); },
   });
+  // метка в списке сессий — коротко и только у тяжёлых: строка списка узкая, имя сессии важнее (07.10: «hu… 330 МБ»)
+  const badge = (root) => {
+    const w = data?.groups?.sessions?.[root._name];
+    const heavy = w && w.kb >= BADGE_KB;
+    root.textContent = heavy ? short(w.kb) : "";
+    root.title = w ? `Память: ${mb(w.kb)}` : "";
+    root.hidden = !heavy;
+  };
   hub.addSlot("sidebar.session", {
     id: "ram-badge", order: 90,
     render(root, snap, ctx) {
-      const v = data?.groups?.sessions?.[ctx.session.name];
-      root.textContent = v ? mb(v.kb) : "";
       root.className = "ram-badge";
-      if (!root._ram) { root._ram = true; listeners.add(() => { const w = data?.groups?.sessions?.[root._name]; if (w) root.textContent = mb(w.kb); }); }
       root._name = ctx.session.name;
+      if (!root._ram) { root._ram = true; listeners.add(() => badge(root)); }
+      badge(root);
     },
   });
 }
