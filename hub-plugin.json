@@ -1,9 +1,9 @@
 {
   "name": "ram",
   "icon": "icon.png",
-  "description": "Сколько оперативной памяти ест каждая сессия: её claude и все дети (MCP-серверы, фоновые команды, сборки), отдельно браузер хаба и процессы хаба с плагинами. Вид «Память» и метка у сессии в списке",
-  "why": "Видно, кто съел гигабайты, не открывая Мониторинг активности: какая сессия, какой MCP или Chrome",
-  "version": "1.1.0",
+  "description": "How much memory each session eats: its claude and all its children (MCP servers, background commands, builds), and apart from them the hub's browser and the hub's processes with plugins. A \"Memory\" view and a label next to the session in the list",
+  "why": "You see who ate the gigabytes without opening a system monitor: which session, which MCP or Chrome",
+  "version": "1.1.1",
   "hub": "^1.7",
   "run": ["python3", "main.py"],
   "web": "web/main.js"

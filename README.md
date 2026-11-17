@@ -1,33 +1,34 @@
 # hub-plugin-ram
 
-Плагин [Agents Hub](https://github.com/flagman/agents-hub-core): сколько оперативной памяти ест каждая сессия хаба -
-её `claude` и все дочерние процессы (MCP-серверы, фоновые команды, сборки), отдельно браузеры хаба и процессы самого
-хаба с плагинами.
+A plugin for [Agents Hub](https://github.com/flagman/agents-hub-core): how much memory each hub session eats - its
+`claude` and all its child processes (MCP servers, background commands, builds), and apart from them the hub's browsers
+and the processes of the hub itself with its plugins.
 
-<img src="icon.png" width="256" alt="Память">
+<img src="icon.png" width="256" alt="Memory">
 
-- Вид «Память» в боковой панели: сессии, браузеры и хаб по убыванию, у каждой - из чего складывается (`claude`,
-  `chrome-devtools-mcp`, `node`…).
-- Освободить память сессии прямо там: раскройте её строку - «Перезапустить» (процесс заново с тем же разговором,
-  MCP-серверы и фоновые команды тоже), «Сжать» (сжать разговор) и у исполнителей и работяг - «Усыпить». Каждое - с
-  подтверждением вторым нажатием; занятая сессия сделает это после хода. Нужен хаб с действиями страницы
-  `/api/session/reload` и `/api/session/compact`.
-- Метка у сессии в списке слева - коротко («330М», «1,2Г»), только у тех, что занимают от 250 МБ; точное число -
-  в подсказке.
+- The "Memory" view in the sidebar: sessions, browsers and the hub from the largest down, each with what it is made of
+  (`claude`, `chrome-devtools-mcp`, `node`…).
+- Free a session's memory right there: open its row - "Restart" (the process anew with the same conversation, MCP
+  servers and background commands too), "Compact" (compact the conversation) and, for executors and workers, "Put to
+  sleep". Each asks for confirmation with a second press; a busy session does it after its turn. Needs a hub with the
+  page actions `/api/session/reload` and `/api/session/compact`.
+- A badge at the session in the list on the left - short ("330M", "1.2G"), only at the ones that take 250 MB or more;
+  the exact number is in the tooltip.
 
-## Как устроено
+## How it works
 
-- `main.py` - процесс рядом с хабом (`run`): раз в несколько секунд снимает `ps` (и `lsof` - папку процессов плагинов,
-  чтобы подписать их по имени) и считает память по деревьям процессов: сессия - процесс `claude -p … -n <имя>` и всё,
-  что под ним; браузер - Chrome с `--remote-debugging-port` и его процессы; остальное под `hub-up` - хаб.
-- Отдаёт снимок странице хаба на `127.0.0.1:<порт страницы + 10>`, только ей. На страницу уходят только короткие
-  подписи процессов (имя программы или скрипта), не командные строки: в них бывают ключи.
-- `web/main.js` - вид «Память» и метка в списке сессий.
+- `main.py` - a process next to the hub (`run`): every few seconds it takes `ps` (and `lsof` - the folder of plugin
+  processes, to label them by name) and sums the memory by process trees: a session is the process
+  `claude -p … -n <name>` and everything under it; a browser is Chrome with `--remote-debugging-port` and its processes;
+  the rest under `hub-up` is the hub.
+- It serves the snapshot to the hub page on `127.0.0.1:<page port + 10>`, only to it. Only short process labels (the
+  name of the program or script) go to the page, not command lines: they may carry keys.
+- `web/main.js` - the "Memory" view and the badge in the session list.
 
-Работает на macOS и Linux (`ps`, `lsof`).
+Works on macOS and Linux (`ps`, `lsof`).
 
-## Тесты
+## Tests
 
 ```
-PYTHONPATH=<папка кода хаба>:. python3 -m unittest discover -s tests
+PYTHONPATH=<hub code folder>:. python3 -m unittest discover -s tests
 ```

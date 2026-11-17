@@ -1,4 +1,4 @@
-"""Сколько оперативной памяти ест каждая сессия хаба: её claude и все дети (MCP, фоновые команды, сборки)."""
+"""How much memory each hub session eats: its claude and all its children (MCP, background commands, builds)."""
 import os
 import re
 import subprocess
@@ -7,7 +7,7 @@ NAME_RE = re.compile(r"(?:^|\s)-n\s+(\S+)")
 
 
 def parse(text):
-    """Вывод `ps -axo pid=,ppid=,rss=,command=` -> {pid: (ppid, rss_kb, command)}."""
+    """The output of `ps -axo pid=,ppid=,rss=,command=` -> {pid: (ppid, rss_kb, command)}."""
     procs = {}
     for line in text.splitlines():
         parts = line.split(None, 3)
@@ -34,7 +34,7 @@ def subtree(root, kids):
 
 
 def label(cmd, cwd=""):
-    """Короткое имя процесса для разбивки."""
+    """A short process name for the breakdown."""
     words = cmd.split()
     if "Google Chrome" in cmd:
         m = re.search(r"--type=(\S+)", cmd)
@@ -52,11 +52,11 @@ def label(cmd, cwd=""):
 
 
 def measure(procs, is_session_root=None, cwds=None):
-    """Разложить процессы по владельцам.
+    """Sort the processes by owner.
 
-    -> {"sessions": {имя: {"kb", "procs": [(label, kb)]}}, "browsers": {...}, "hub": {...}}
-    Сессия — claude с `-n <имя>`; браузер — процесс с --remote-debugging-port и его дети;
-    остальное под hub-up — процессы хаба.
+    -> {"sessions": {name: {"kb", "procs": [(label, kb)]}}, "browsers": {...}, "hub": {...}}
+    A session is claude with `-n <name>`; a browser is a process with --remote-debugging-port and its children;
+    the rest under hub-up are the hub's processes.
     """
     cwds = cwds or {}
     kids = children_map(procs)
@@ -81,7 +81,7 @@ def measure(procs, is_session_root=None, cwds=None):
     for pid, (_, _, cmd) in sorted(procs.items()):
         if "Google Chrome" in cmd and "--remote-debugging-port=" in cmd and "--type=" not in cmd:
             port = re.search(r"--remote-debugging-port=(\d+)", cmd).group(1)
-            claim("browsers", "Chrome (снимки)" if port == "0" else f"Chrome :{port}", pid)
+            claim("browsers", "Chrome (snapshots)" if port == "0" else f"Chrome :{port}", pid)
     hubup = [p for p, (_, _, c) in procs.items() if c.endswith("bin/hub-up")]
     for root in hubup:
         for pid in subtree(root, kids):

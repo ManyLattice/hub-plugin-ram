@@ -1,4 +1,4 @@
-"""Память по агентам: процесс снимает ps раз в N секунд, страница читает снимок по HTTP (порт страницы + 10)."""
+"""Memory by agent: the process takes ps every N seconds, the page reads the snapshot over HTTP (page port + 10)."""
 import http.server
 import json
 import os
@@ -43,5 +43,5 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     threading.Thread(target=loop, daemon=True).start()
-    print(f"память: страница — 127.0.0.1:{PORT}", flush=True)
+    print(f"ram: page — 127.0.0.1:{PORT}", flush=True)
     http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
